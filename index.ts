@@ -1,20 +1,57 @@
-import { WebsocketAPI } from "@binance/connector-typescript";
-require("dotenv").config();
+// import WebSocket from "ws";
+// require("dotenv").config();
 
-const API_KEY = process.env.API_KEY;
-const API_SECRET = process.env.API_SECRET;
-
-// const callbacks = {
-//   open: (client: WebsocketAPI) => client.account(),
-//   close: () => console.debug("Disconnected from WebSocket server"),
-//   message: (data: string) => console.log(JSON.parse(data).result.balances),
+// const apiKey = process.env.API_KEY;
+// const apiSecret = process.env.API_SECRET;
+// const request = {
+//   id: new Date().getTime(),
+//   method: "order.place",
+//   params: {
+//     symbol: "BTCUSDT",
+//     side: "BUY",
+//     type: "LIMIT",
+//     price: "0.1",
+//     quantity: "10",
+//     timeInForce: "GTC",
+//     timestamp: new Date().getTime(),
+//     apiKey: apiKey,
+//     signature: apiSecret,
+//   },
 // };
 
-// const websocketAPIClient = () =>
-//   new WebsocketAPI(API_KEY, API_SECRET, { callbacks }).account;
+// const socket = new WebSocket("wss://testnet.binance.vision/ws-api/v3");
 
-// websocketAPIClient();
+// socket.onopen = (e: WebSocket.Event) => {
+//   socket.send(JSON.stringify(request));
+// };
 
-// setInterval(() => {
-//   websocketAPIClient();
-// }, 3000);
+// socket.onmessage = (e: WebSocket.MessageEvent) => {
+//   console.log("Message from server ", e.data);
+// };
+
+// socket.onclose = (e: WebSocket.CloseEvent) => {
+//   console.log(e);
+// };
+
+// socket.onerror = (e: WebSocket.ErrorEvent) => {
+//   console.log(e);
+// };
+
+const sqlite3 = require("sqlite3").verbose();
+const db = new sqlite3.Database(":memory:");
+
+db.serialize(() => {
+  db.run("CREATE TABLE lorem (info TEXT)");
+
+  const stmt = db.prepare("INSERT INTO lorem VALUES (?)");
+  for (let i = 0; i < 10; i++) {
+    stmt.run("Ipsum " + i);
+  }
+  stmt.finalize();
+
+  db.each("SELECT rowid AS id, info FROM lorem", (_err: any, row: any) => {
+    console.log(row.id + ": " + row.info);
+  });
+});
+
+db.close();
